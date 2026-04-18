@@ -130,9 +130,12 @@ Status atual do projeto `gerador-catalogo-darkile`:
 - `PDF_BUCKET_NAME`: configurada
 - `OPENAI_VISION_MODEL`: configurada (`gpt-4o`)
 - `AI_WORKER_CONCURRENCY`: configurada (`2`)
-- `OPENAI_API_KEY`: pendente (opcional para fallback, obrigatório para descrição real com IA)
+- `AI_PROVIDER`: configurável (`gemini` ou `openai`)
+- `GEMINI_VISION_MODEL`: recomendado (`gemini-2.5-flash`)
+- `GEMINI_API_KEY`: recomendado para produção
+- `OPENAI_API_KEY`: opcional (necessária apenas se `AI_PROVIDER=openai`)
 
-Sem `OPENAI_API_KEY`, o pipeline continua funcional com descrição de fallback.
+Sem chave válida do provider selecionado, o pipeline continua funcional com descrição de fallback.
 
 ## Observações operacionais
 

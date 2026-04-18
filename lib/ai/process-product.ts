@@ -13,7 +13,24 @@ function fallbackVisionResult(): VisionResult {
   };
 }
 
-export async function processImageWithVision(imageUrl: string): Promise<VisionResult> {
+function stripCodeFence(text: string) {
+  const trimmed = text.trim();
+  if (trimmed.startsWith("```") && trimmed.endsWith("```")) {
+    return trimmed.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, "").trim();
+  }
+  return trimmed;
+}
+
+function parseVisionResult(raw: string): VisionResult {
+  const cleaned = stripCodeFence(raw);
+  const parsed = JSON.parse(cleaned) as VisionResult;
+  return {
+    product_type: sanitizeAiText(parsed.product_type),
+    description: sanitizeAiText(parsed.description),
+  };
+}
+
+async function processImageWithOpenAi(imageUrl: string): Promise<VisionResult> {
   const openai = getOpenAiClient();
 
   const response = await openai.chat.completions.create({
@@ -50,21 +67,152 @@ export async function processImageWithVision(imageUrl: string): Promise<VisionRe
 
   const content = response.choices[0]?.message?.content;
   if (!content) {
-    throw new Error("Resposta vazia da IA de visão.");
+    throw new Error("Resposta vazia da IA de visão (OpenAI).");
   }
 
-  const parsed = JSON.parse(content) as VisionResult;
+  return parseVisionResult(content);
+}
+
+async function fetchImageAsBase64(imageUrl: string) {
+  const response = await fetch(imageUrl);
+  if (!response.ok) {
+    throw new Error(`Falha ao baixar imagem para Gemini: HTTP ${response.status}`);
+  }
+
+  const contentTypeHeader = response.headers.get("content-type") ?? "image/jpeg";
+  const mimeType = contentTypeHeader.split(";")[0]?.trim() || "image/jpeg";
+  const buffer = Buffer.from(await response.arrayBuffer());
 
   return {
-    product_type: sanitizeAiText(parsed.product_type),
-    description: sanitizeAiText(parsed.description),
+    mimeType,
+    dataBase64: buffer.toString("base64"),
   };
 }
 
+async function processImageWithGemini(imageUrl: string): Promise<VisionResult> {
+  const apiKey = process.env.GEMINI_API_KEY?.trim();
+  if (!apiKey) {
+    throw new Error("GEMINI_API_KEY não configurada.");
+  }
+
+  const model = process.env.GEMINI_VISION_MODEL ?? "gemini-2.5-flash";
+  const { mimeType, dataBase64 } = await fetchImageAsBase64(imageUrl);
+
+  const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`;
+
+  const requestBody = {
+    contents: [
+      {
+        role: "user",
+        parts: [
+          {
+            text: `${buildVisionPrompt()}\nRetorne apenas JSON válido com as chaves product_type e description.`,
+          },
+          {
+            inline_data: {
+              mime_type: mimeType,
+              data: dataBase64,
+            },
+          },
+        ],
+      },
+    ],
+    generationConfig: {
+      temperature: 0.2,
+      maxOutputTokens: 280,
+      responseMimeType: "application/json",
+      responseSchema: {
+        type: "object",
+        properties: {
+          product_type: {
+            type: "string",
+          },
+          description: {
+            type: "string",
+          },
+        },
+        required: ["product_type", "description"],
+      },
+    },
+  };
+
+  const response = await fetch(endpoint, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "x-goog-api-key": apiKey,
+    },
+    body: JSON.stringify(requestBody),
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`Gemini retornou erro ${response.status}: ${errorText.slice(0, 400)}`);
+  }
+
+  const payload = (await response.json()) as {
+    candidates?: Array<{
+      content?: {
+        parts?: Array<{
+          text?: string;
+        }>;
+      };
+    }>;
+  };
+
+  const text = payload.candidates?.[0]?.content?.parts?.find((part) => typeof part.text === "string")?.text;
+
+  if (!text) {
+    throw new Error("Resposta vazia da IA de visão (Gemini).");
+  }
+
+  return parseVisionResult(text);
+}
+
+function resolveProvider() {
+  const explicit = (process.env.AI_PROVIDER ?? "gemini").trim().toLowerCase();
+
+  if (explicit === "gemini" || explicit === "openai") {
+    return explicit;
+  }
+
+  if (explicit === "auto") {
+    if (process.env.GEMINI_API_KEY?.trim()) {
+      return "gemini";
+    }
+    if (process.env.OPENAI_API_KEY?.trim()) {
+      return "openai";
+    }
+  }
+
+  return "gemini";
+}
+
+export async function processImageWithVision(imageUrl: string): Promise<VisionResult> {
+  const provider = resolveProvider();
+
+  if (provider === "openai") {
+    return processImageWithOpenAi(imageUrl);
+  }
+
+  return processImageWithGemini(imageUrl);
+}
+
 export async function processImageWithRetry(imageUrl: string, retries = 2): Promise<VisionResult> {
-  const openAiKey = process.env.OPENAI_API_KEY?.trim();
-  if (!openAiKey || !openAiKey.startsWith("sk-")) {
-    return fallbackVisionResult();
+  const provider = resolveProvider();
+
+  if (provider === "openai") {
+    const openAiKey = process.env.OPENAI_API_KEY?.trim();
+    if (!openAiKey || !openAiKey.startsWith("sk-")) {
+      return fallbackVisionResult();
+    }
+  }
+
+  if (provider === "gemini") {
+    const geminiKey = process.env.GEMINI_API_KEY?.trim();
+    if (!geminiKey || !geminiKey.startsWith("AIza")) {
+      return fallbackVisionResult();
+    }
   }
 
   let lastError: unknown;
@@ -80,6 +228,9 @@ export async function processImageWithRetry(imageUrl: string, retries = 2): Prom
     }
   }
 
-  console.error("Falha no processamento IA, aplicando fallback.", lastError);
+  console.error("Falha no processamento IA, aplicando fallback.", {
+    provider,
+    error: lastError,
+  });
   return fallbackVisionResult();
 }
