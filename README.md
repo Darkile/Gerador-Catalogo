@@ -9,7 +9,7 @@ Sistema web para montar catálogos editoriais em PDF A4 com estilo Gregory Paper
 
 > Atualize esta seção após o deploy com a URL final:
 >
-> `https://SEU-PROJETO.vercel.app`
+> `https://gerador-catalogo-darkile.vercel.app`
 
 ## Stack implementada
 
