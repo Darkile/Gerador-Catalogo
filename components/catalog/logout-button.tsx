@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useTransition } from "react";
 import { useRouter } from "next/navigation";
@@ -15,7 +15,7 @@ export function LogoutButton() {
       type="button"
       variant="outline"
       size="sm"
-      className="gap-2"
+      className="gap-2 h-7 sm:h-9 px-2 sm:px-3 text-[10px] sm:text-xs uppercase tracking-widest"
       onClick={() => {
         startTransition(async () => {
           const supabase = getSupabaseBrowserClient();
@@ -26,7 +26,7 @@ export function LogoutButton() {
       }}
       disabled={isPending}
     >
-      {isPending ? <Spinner /> : null}
+      {isPending ? <Spinner className="h-3 w-3" /> : null}
       Sair
     </Button>
   );

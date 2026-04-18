@@ -396,22 +396,22 @@ export default function EditorPage() {
             </div>
           </div>
 
-          <div className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-2">
-            <Button className="w-full sm:w-auto" type="button" variant={coverEnabled ? "default" : "outline"} onClick={() => setCatalogMeta({ coverEnabled: !coverEnabled })}>
-              {coverEnabled ? "Capa: ligada" : "Capa: desligada"}
+          <div className="grid grid-cols-2 sm:flex sm:flex-row sm:flex-wrap items-stretch sm:items-center gap-2">
+            <Button className="w-full sm:w-auto text-[10px] sm:text-xs uppercase tracking-widest h-10 sm:h-9" type="button" variant={coverEnabled ? "default" : "outline"} onClick={() => setCatalogMeta({ coverEnabled: !coverEnabled })}>
+              {coverEnabled ? "Capa: On" : "Capa: Off"}
             </Button>
-            <Button className="w-full sm:w-auto" type="button" variant="outline" onClick={() => router.push("/upload")}>Adicionar imagens</Button>
-            <Button className="w-full sm:w-auto" type="button" variant="outline" onClick={() => setPreviewOpen(true)}>Visualizar PDF</Button>
-            <Button className="w-full sm:w-auto" type="button" onClick={handleProcessAi} disabled={isProcessingAi || isSaving || products.length === 0}>
-              {isProcessingAi ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
+            <Button className="w-full sm:w-auto text-[10px] sm:text-xs uppercase tracking-widest h-10 sm:h-9" type="button" variant="outline" onClick={() => router.push("/upload")}>Add Imagens</Button>
+            <Button className="w-full sm:w-auto text-[10px] sm:text-xs uppercase tracking-widest h-10 sm:h-9" type="button" variant="outline" onClick={() => setPreviewOpen(true)}>Ver PDF</Button>
+            <Button className="w-full sm:w-auto text-[10px] sm:text-xs uppercase tracking-widest h-10 sm:h-9" type="button" onClick={handleProcessAi} disabled={isProcessingAi || isSaving || products.length === 0}>
+              {isProcessingAi ? <Loader2 className="mr-2 h-3 w-3 animate-spin" /> : <Sparkles className="mr-2 h-3 w-3" />}
               Processar IA
             </Button>
-            <Button className="w-full sm:w-auto" type="button" onClick={handleGeneratePdf} disabled={isGeneratingPdf || isSaving || products.length === 0}>
-              {isGeneratingPdf ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <FileDown className="mr-2 h-4 w-4" />}
+            <Button className="w-full sm:w-auto text-[10px] sm:text-xs uppercase tracking-widest h-10 sm:h-9" type="button" onClick={handleGeneratePdf} disabled={isGeneratingPdf || isSaving || products.length === 0}>
+              {isGeneratingPdf ? <Loader2 className="mr-2 h-3 w-3 animate-spin" /> : <FileDown className="mr-2 h-3 w-3" />}
               Gerar PDF
             </Button>
-            <Button className="w-full sm:w-auto" type="button" variant="secondary" onClick={saveCatalog} disabled={isSaving}>
-              {isSaving ? <Spinner className="mr-2" /> : null}
+            <Button className="w-full sm:w-auto text-[10px] sm:text-xs uppercase tracking-widest h-10 sm:h-9" type="button" variant="secondary" onClick={saveCatalog} disabled={isSaving}>
+              {isSaving ? <Spinner className="mr-2 h-3 w-3" /> : null}
               Salvar
             </Button>
           </div>

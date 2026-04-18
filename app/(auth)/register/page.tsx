@@ -77,31 +77,31 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="flex flex-col lg:flex-row min-h-screen">
+    <div className="flex flex-col lg:flex-row min-h-screen bg-white">
       {/* Lado Esquerdo - Imagem Institucional */}
-      <div className="relative block w-full h-[35vh] lg:h-auto lg:w-1/2 overflow-hidden bg-neutral-100">
+      <div className="relative block w-full h-[45vh] lg:h-screen lg:w-1/2 overflow-hidden">
         <div ref={containerRef} className="absolute inset-0">
           <img 
-            className="gsap-stagger h-full w-full object-cover grayscale-[10%] hover:grayscale-0 transition-all duration-[2000ms] hover:scale-105"
+            className="gsap-stagger h-full w-full object-cover grayscale-[10%] hover:grayscale-0 transition-all duration-[2000ms] lg:hover:scale-105"
             src="/gregory_editorial_login.png" 
             alt="Gregory Editorial" 
           />
-          <div className="absolute top-6 left-6 lg:top-8 lg:left-10 z-10 bg-white/40 lg:bg-transparent px-4 py-2 lg:p-0 rounded-sm backdrop-blur-md lg:backdrop-blur-none">
-            <h1 className="text-2xl lg:text-4xl tracking-widest font-serif text-[#8A0303] drop-shadow-sm">GREGORY</h1>
+          <div className="absolute inset-0 bg-gradient-to-t from-white lg:from-transparent via-transparent to-transparent lg:bg-black/5" />
+          <div className="absolute top-8 left-8 lg:top-12 lg:left-12 z-10">
+            <h1 className="text-3xl lg:text-5xl tracking-[0.2em] font-serif text-[#8A0303] drop-shadow-md lg:text-white">GREGORY</h1>
           </div>
         </div>
       </div>
 
       {/* Lado Direito - Formulário */}
-      <div ref={containerRef} className="catalog-shell flex w-full lg:w-1/2 flex-col items-center justify-center px-6 py-8 lg:p-24 bg-white lg:bg-transparent">
-
-        <Card className="gsap-stagger w-full max-w-md border-transparent bg-transparent shadow-none">
-          <CardHeader className="gsap-stagger px-0 sm:px-6">
-          <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Operação Interna</p>
-          <CardTitle className="text-2xl sm:text-3xl font-serif">Criar Conta</CardTitle>
-          <CardDescription>Cadastre-se para começar a criar catálogos.</CardDescription>
+      <div ref={containerRef} className="catalog-shell flex w-full lg:w-1/2 flex-col items-center justify-center -mt-12 lg:mt-0 px-6 pb-12 lg:p-24 z-20">
+        <Card className="gsap-stagger w-full max-w-md border-transparent bg-white/80 backdrop-blur-xl lg:bg-transparent shadow-2xl lg:shadow-none p-2 rounded-2xl lg:rounded-none">
+          <CardHeader className="gsap-stagger px-4 lg:px-6">
+          <p className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground mb-2">Operação Interna</p>
+          <CardTitle className="text-2xl lg:text-4xl font-serif">Criar Conta</CardTitle>
+          <CardDescription className="text-sm">Cadastre-se para começar a criar catálogos.</CardDescription>
         </CardHeader>
-        <CardContent className="space-y-6 px-0 sm:px-6">
+        <CardContent className="space-y-6 px-4 lg:px-6">
           <form className="space-y-5" onSubmit={form.handleSubmit(onSubmit)}>
             <div className="space-y-2">
               <Label htmlFor="email">E-mail</Label>

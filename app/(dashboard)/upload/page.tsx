@@ -355,9 +355,9 @@ export default function UploadPage() {
 
           {errorMessage ? <p className="text-sm text-red-700">{errorMessage}</p> : null}
 
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <p className="text-sm text-neutral-600">{totalSelected} arquivo(s) prontos para envio</p>
-            <Button className="w-full sm:w-auto" type="button" variant="outline" onClick={() => setPendingFiles([])} disabled={pendingFiles.length === 0}>
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
+            <p className="text-xs sm:text-sm text-neutral-600 font-medium">{totalSelected} arquivo(s) prontos para envio</p>
+            <Button className="w-full sm:w-auto h-9 text-[10px] uppercase tracking-widest" type="button" variant="outline" onClick={() => setPendingFiles([])} disabled={pendingFiles.length === 0}>
               Limpar lista
             </Button>
           </div>
@@ -407,11 +407,11 @@ export default function UploadPage() {
             </div>
           )}
 
-          <div className="mt-12 grid grid-cols-1 sm:flex sm:flex-row sm:justify-end gap-4 border-t border-neutral-100 pt-8">
-            <Button type="button" variant="ghost" className="w-full uppercase tracking-widest text-xs" onClick={() => router.push("/editor")}>
+          <div className="mt-12 flex flex-col sm:flex-row items-stretch sm:justify-end gap-3 border-t border-neutral-100 pt-8">
+            <Button type="button" variant="ghost" className="order-2 sm:order-1 w-full sm:w-auto uppercase tracking-[0.2em] text-[10px] sm:text-xs h-12 sm:h-auto" onClick={() => router.push("/editor")}>
               Pular para editor
             </Button>
-            <Button type="button" className="w-full sm:w-auto px-8 text-xs uppercase tracking-widest" onClick={handleUpload} disabled={!canUpload}>
+            <Button type="button" className="order-1 sm:order-2 w-full sm:w-auto px-8 py-6 sm:py-2 text-[10px] sm:text-xs uppercase tracking-[0.2em] h-12 sm:h-auto font-bold" onClick={handleUpload} disabled={!canUpload}>
               {isUploading ? <Spinner className="mr-2" /> : null}
               Finalizar seleção
             </Button>
