@@ -1,10 +1,10 @@
-﻿import * as React from "react";
+import * as React from "react";
 import { cn } from "@/lib/utils";
 
 export function Card({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
-      className={cn("rounded-lg border border-neutral-200 bg-white text-neutral-900 shadow-sm", className)}
+      className={cn("rounded-[var(--radius)] border border-border bg-card text-card-foreground transition-all duration-500 hover:border-foreground/20", className)}
       {...props}
     />
   );

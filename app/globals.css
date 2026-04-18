@@ -1,4 +1,4 @@
-﻿@tailwind base;
+@tailwind base;
 @tailwind components;
 @tailwind utilities;
 
@@ -42,7 +42,10 @@ body {
 
 body {
   @apply bg-[hsl(var(--background))] text-[hsl(var(--foreground))];
-  font-feature-settings: "ss01";
+  font-feature-settings: "ss01", "cv01";
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 .catalog-shell {

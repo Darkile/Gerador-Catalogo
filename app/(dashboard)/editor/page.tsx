@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -26,6 +26,18 @@ import { mergeDesignTokens } from "@/lib/design-tokens";
 import { formatCurrencyBRL } from "@/lib/price";
 import { buildCatalogPdfFilename } from "@/lib/pdf/file-name";
 import { useCatalogStore } from "@/stores/catalog-store";
+import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+if (typeof window !== "undefined") {
+  gsap.registerPlugin(ScrollTrigger);
+}
+
+const percentFormatter = new Intl.NumberFormat("pt-BR", {
+  minimumFractionDigits: 0,
+  maximumFractionDigits: 2,
+});
 
 export default function EditorPage() {
   const router = useRouter();
@@ -55,8 +67,36 @@ export default function EditorPage() {
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [statusError, setStatusError] = useState<string | null>(null);
   const [aiProgress, setAiProgress] = useState(0);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const mergedTokens = useMemo(() => mergeDesignTokens(tokenOverrides), [tokenOverrides]);
+
+  useGSAP(() => {
+    // Anima o Header do dashboard
+    gsap.from(".anim-editor-header", {
+      y: 40,
+      opacity: 0,
+      duration: 1,
+      ease: "power4.out",
+    });
+
+    // ScrollTrigger para os Cards dos Produtos (Bento grid style)
+    const cards = gsap.utils.toArray<HTMLElement>(".anim-product-card");
+    cards.forEach((card) => {
+      gsap.from(card, {
+        scrollTrigger: {
+          trigger: card,
+          start: "top bottom-=80", // Começa um pouco antes de aparecer
+          toggleActions: "play none none reverse"
+        },
+        y: 60,
+        opacity: 0,
+        scale: 0.98,
+        duration: 0.8,
+        ease: "power3.out"
+      });
+    });
+  }, { scope: containerRef, dependencies: [products] });
 
   useEffect(() => {
     if (!catalogId) {
@@ -279,7 +319,9 @@ export default function EditorPage() {
       const anchor = document.createElement("a");
       anchor.href = url;
       anchor.download = buildCatalogPdfFilename(new Date());
+      document.body.appendChild(anchor);
       anchor.click();
+      anchor.remove();
       URL.revokeObjectURL(url);
       setStatusMessage("PDF gerado e download iniciado.");
     } catch (error) {
@@ -290,12 +332,12 @@ export default function EditorPage() {
   }
 
   return (
-    <div className="space-y-6">
-      <Card>
+    <div ref={containerRef} className="space-y-12 pb-24">
+      <Card className="anim-editor-header border-border bg-card shadow-none">
         <CardHeader>
           <CardTitle>Editor de Catálogo</CardTitle>
           <CardDescription>
-            Complete SKU, preços, tamanhos e ajustes editoriais. O preço final é calculado automaticamente.
+            Complete SKU, preços, tamanhos e ajustes editoriais. O desconto é calculado automaticamente a partir do preço original e do preço final.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -402,13 +444,13 @@ export default function EditorPage() {
           </CardContent>
         </Card>
       ) : (
-        <section className="editor-grid">
+        <section className="editor-grid gap-12 mt-12">
           {products
             .slice()
             .sort((a, b) => a.position - b.position)
             .map((product, index) => (
-              <Card key={product.id}>
-                <CardHeader>
+              <Card key={product.id} className="anim-product-card overflow-hidden border-border bg-transparent shadow-none hover:border-foreground/30 transition-all duration-500">
+                <CardHeader className="bg-neutral-50/50 pb-4">
                   <div className="flex items-center justify-between gap-2">
                     <div>
                       <CardTitle className="text-base">Produto #{index + 1}</CardTitle>
@@ -425,7 +467,9 @@ export default function EditorPage() {
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  <img src={product.image_url} alt={`Produto ${index + 1}`} className="h-56 w-full rounded object-cover" />
+                  <div className="flex h-56 items-center justify-center rounded border border-neutral-200 bg-neutral-50 p-4">
+                    <img src={product.image_url} alt={`Produto ${index + 1}`} className="h-full w-full object-contain" />
+                  </div>
 
                   <div className="space-y-1">
                     <Label>SKU</Label>
@@ -464,25 +508,28 @@ export default function EditorPage() {
                       />
                     </div>
                     <div className="space-y-1">
-                      <Label>Desconto (%)</Label>
+                      <Label>Preço final</Label>
                       <Input
                         type="number"
                         min={0}
-                        max={100}
                         step="0.01"
-                        value={product.discount_percent}
+                        value={product.final_price}
                         onChange={(event) =>
                           updateProduct(product.id, {
-                            discount_percent: Number(event.target.value) || 0,
+                            final_price: Number(event.target.value) || 0,
                           })
                         }
                       />
                     </div>
                     <div className="space-y-1">
-                      <Label>Preço final</Label>
-                      <Input value={formatCurrencyBRL(product.final_price)} readOnly />
+                      <Label>Desconto calculado</Label>
+                      <Input value={`${percentFormatter.format(product.discount_percent)}%`} readOnly />
                     </div>
                   </div>
+
+                  <p className="text-xs text-neutral-500">
+                    Visual comercial: {formatCurrencyBRL(product.final_price)}
+                  </p>
 
                   <div className="space-y-1">
                     <Label>Tamanhos</Label>

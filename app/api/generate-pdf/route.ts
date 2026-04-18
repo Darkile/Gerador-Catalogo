@@ -47,11 +47,12 @@ export async function POST(request: Request) {
       printBackground: true,
       format: "A4",
       margin: {
-        top: `${tokens.layout.page_margin_top_mm}mm`,
-        right: `${tokens.layout.page_margin_right_mm}mm`,
-        bottom: `${tokens.layout.page_margin_bottom_mm}mm`,
-        left: `${tokens.layout.page_margin_left_mm}mm`,
+        top: "0mm",
+        right: "0mm",
+        bottom: "0mm",
+        left: "0mm",
       },
+      preferCSSPageSize: true,
     });
 
     const filename = buildCatalogPdfFilename();

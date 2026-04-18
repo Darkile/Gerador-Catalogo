@@ -1,4 +1,4 @@
-﻿export function requireEnv(name: string) {
+export function requireEnv(name: string) {
   const value = process.env[name];
   if (!value) {
     throw new Error(`Variável de ambiente obrigatória ausente: ${name}`);
@@ -16,7 +16,7 @@ export const env = {
   openaiApiKey: process.env.OPENAI_API_KEY ?? "",
   openaiVisionModel: process.env.OPENAI_VISION_MODEL ?? "gpt-4o",
   geminiApiKey: process.env.GEMINI_API_KEY ?? "",
-  geminiVisionModel: process.env.GEMINI_VISION_MODEL ?? "gemini-2.5-flash",
+  geminiVisionModel: process.env.GEMINI_VISION_MODEL ?? "gemini-3.1-pro-preview",
   aiTimeoutMs: Number(process.env.AI_TIMEOUT_MS ?? "30000"),
   redisUrl: process.env.UPSTASH_REDIS_REST_URL ?? process.env.REDIS_URL ?? "",
   redisToken: process.env.UPSTASH_REDIS_REST_TOKEN ?? process.env.REDIS_TOKEN ?? "",

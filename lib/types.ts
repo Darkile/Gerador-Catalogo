@@ -111,6 +111,18 @@ export interface CatalogWithProducts extends Catalog {
   products: Product[];
 }
 
+export interface VisionAttributes {
+  category: string;
+  length: string;
+  silhouette: string;
+  sleeves: string;
+  neckline: string;
+  pattern: string;
+  texture: string;
+  details: string;
+  standout: string;
+}
+
 export interface AiJob {
   id: string;
   catalog_id: string;
@@ -127,4 +139,5 @@ export interface AiJob {
 export interface VisionResult {
   product_type: string;
   description: string;
+  visual_attributes: VisionAttributes;
 }

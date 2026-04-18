@@ -134,7 +134,7 @@ Status atual do projeto `gerador-catalogo-darkile`:
 - `AI_WORKER_CONCURRENCY`: configurada (`2`)
 - `AI_PROVIDER`: configurável (`gemini` ou `openai`)
 - `AI_TIMEOUT_MS`: recomendado (`30000`)
-- `GEMINI_VISION_MODEL`: recomendado (`gemini-2.5-flash`)
+- `GEMINI_VISION_MODEL`: recomendado (`gemini-3.1-pro-preview`)
 - `GEMINI_API_KEY`: recomendado para produção
 - `OPENAI_API_KEY`: opcional (necessária apenas se `AI_PROVIDER=openai`)
 

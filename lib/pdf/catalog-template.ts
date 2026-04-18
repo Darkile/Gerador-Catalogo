@@ -1,37 +1,62 @@
-﻿import type { Catalog, DesignTokens, Product } from "@/lib/types";
-import { formatCurrencyBRL } from "@/lib/price";
+import type { Catalog, DesignTokens } from "@/lib/types";
+import { buildCatalogPresentation, type CatalogRenderableProduct } from "@/lib/catalog-presentation";
 import { escapeHtml } from "@/lib/pdf/html";
 import { buildCatalogPrintCss } from "@/lib/pdf/template-styles";
 
-function shouldUseFullBleed(product: Product) {
-  if (!product.image_ratio) {
-    return false;
-  }
-
-  return product.image_ratio < 0.78 || product.image_ratio > 1.45;
+function renderFooter(footerText: string, pageLabel: string) {
+  return `
+    <div class="section-footer">
+      <span class="section-footer__brand">${escapeHtml(footerText)}</span>
+      <span class="section-footer__page">Pág. ${escapeHtml(pageLabel)}</span>
+    </div>
+  `;
 }
 
-function renderProduct(product: Product) {
-  const hasDiscount = Number(product.discount_percent) > 0;
-  const fullBleed = shouldUseFullBleed(product);
-
+function renderCover(title: string, deck: string, footerText: string, pageLabel: string) {
   return `
-    <article class="product-spread ${fullBleed ? "product-spread--full" : ""}">
-      <img class="product-image" src="${escapeHtml(product.image_url)}" alt="${escapeHtml(product.product_type || "Produto")}" />
-      <div class="product-info">
-        <p class="sku">SKU ${escapeHtml(product.sku || "--")}</p>
-        <h2 class="product-name">${escapeHtml(product.product_type || "Produto sem nome")}</h2>
-        <p class="description">${escapeHtml(product.description || "Descrição indisponível.")}</p>
-        <div class="price-stack">
-          ${
-            hasDiscount
-              ? `<span class="price-old">${formatCurrencyBRL(product.original_price)}</span>
-                 <span class="price-final">${formatCurrencyBRL(product.final_price)}</span>`
-              : `<span class="price-final price-final--single">${formatCurrencyBRL(product.final_price || product.original_price)}</span>`
-          }
+    <section class="catalog-page catalog-cover">
+      <p class="catalog-cover__eyebrow">Gregory Editorial</p>
+      <h1 class="catalog-cover__title">${escapeHtml(title)}</h1>
+      <div class="catalog-cover__divider"></div>
+      <p class="catalog-cover__deck">${escapeHtml(deck)}</p>
+      ${renderFooter(footerText, pageLabel)}
+    </section>
+  `;
+}
+
+function renderProduct(
+  product: ReturnType<typeof buildCatalogPresentation>["products"][number],
+  footerText: string,
+) {
+  return `
+    <article class="catalog-page product-spread product-spread--${product.variant}">
+      <div class="product-spread__content">
+        <div class="product-spread__media">
+          <div class="product-spread__frame">
+            <img class="product-image" src="${escapeHtml(product.image_url)}" alt="${escapeHtml(product.image_alt)}" />
+          </div>
         </div>
-        <p class="sizes">Tam: ${escapeHtml(product.sizes || "A definir")}</p>
+        <div class="product-spread__panel">
+          <div class="product-panel__surface">
+            <p class="product-panel__eyebrow">${escapeHtml(product.editorial_label)}</p>
+            <p class="sku">SKU ${escapeHtml(product.sku)}</p>
+            <h2 class="product-name">${escapeHtml(product.product_type)}</h2>
+            <p class="description">${escapeHtml(product.description)}</p>
+            <div class="product-pricing">
+              ${product.discount_label ? `<span class="discount-pill">${escapeHtml(product.discount_label)}</span>` : ""}
+              <div class="price-row">
+                ${product.original_price_label ? `<span class="price-old">${escapeHtml(product.original_price_label)}</span>` : ""}
+                <span class="price-final ${product.has_price ? "" : "price-final--consult"}">${escapeHtml(product.final_price_label)}</span>
+              </div>
+            </div>
+            <div class="product-meta">
+              <span class="product-meta__label">Tamanhos</span>
+              <span class="sizes">${escapeHtml(product.sizes_label)}</span>
+            </div>
+          </div>
+        </div>
       </div>
+      ${renderFooter(footerText, product.page_label)}
     </article>
   `;
 }
@@ -41,19 +66,15 @@ export function renderCatalogHtml({
   products,
   tokens,
 }: {
-  catalog: Catalog;
-  products: Product[];
+  catalog: Pick<Catalog, "title" | "cover_enabled">;
+  products: CatalogRenderableProduct[];
   tokens: DesignTokens;
 }) {
-  const orderedProducts = [...products].sort((a, b) => a.position - b.position);
-  const cover = catalog.cover_enabled
-    ? `
-      <section class="catalog-cover">
-        <h1>${escapeHtml(catalog.title || "Catálogo Gregory")}</h1>
-        <p>Seleção editorial de inverno com acabamento refinado e elegância atemporal.</p>
-      </section>
-    `
-    : "";
+  const presentation = buildCatalogPresentation({
+    catalog,
+    products,
+    footerText: tokens.components.footer_text || "Gregory Moda • Edição editorial",
+  });
 
   return `
     <!doctype html>
@@ -61,17 +82,14 @@ export function renderCatalogHtml({
       <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <title>${escapeHtml(catalog.title || "Catálogo Gregory")}</title>
+        <title>${escapeHtml(presentation.title)}</title>
         <style>${buildCatalogPrintCss(tokens)}</style>
       </head>
       <body>
         <main class="catalog-root">
-          ${cover}
-          ${orderedProducts.map(renderProduct).join("\n")}
+          ${presentation.cover_enabled ? renderCover(presentation.title, presentation.cover_deck, presentation.footer_text, presentation.cover_page_label) : ""}
+          ${presentation.products.map((product) => renderProduct(product, presentation.footer_text)).join("\n")}
         </main>
-        <footer class="catalog-footer">
-          ${escapeHtml(tokens.components.footer_text)} • Página <span class="catalog-page-number"></span>
-        </footer>
       </body>
     </html>
   `;

@@ -1,9 +1,9 @@
-﻿"use client";
+"use client";
 
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import type { DesignTokenOverrides, EditableProductInput } from "@/lib/types";
-import { calculateFinalPrice } from "@/lib/price";
+import { calculateFinalPrice, normalizePricing } from "@/lib/price";
 
 export type EditableProduct = EditableProductInput;
 
@@ -40,6 +40,17 @@ function normalizePositions(products: EditableProduct[]) {
     .map((product, index) => ({ ...product, position: index }));
 }
 
+function normalizeProductPricing(product: EditableProduct, patch?: Partial<EditableProduct>) {
+  const originalPrice = patch?.original_price ?? product.original_price;
+  const finalPrice = patch?.final_price ?? (
+    patch?.discount_percent !== undefined
+      ? calculateFinalPrice(originalPrice, patch.discount_percent)
+      : product.final_price
+  );
+
+  return normalizePricing(originalPrice, finalPrice);
+}
+
 const initialState = {
   catalogId: null,
   catalogTitle: "Coleção Inverno Gregory",
@@ -68,13 +79,19 @@ export const useCatalogStore = create<CatalogStoreState>()(
         const normalized = normalizePositions(
           products.map((product) => ({
             ...product,
-            final_price: calculateFinalPrice(product.original_price ?? 0, product.discount_percent ?? 0),
+            ...normalizePricing(product.original_price ?? 0, product.final_price ?? 0),
           })),
         );
         set({ products: normalized });
       },
       addProducts: (products) => {
-        const merged = [...get().products, ...products];
+        const merged = [
+          ...get().products,
+          ...products.map((product) => ({
+            ...product,
+            ...normalizePricing(product.original_price ?? 0, product.final_price ?? 0),
+          })),
+        ];
         set({ products: normalizePositions(merged) });
       },
       updateProduct: (productId, patch) => {
@@ -83,13 +100,10 @@ export const useCatalogStore = create<CatalogStoreState>()(
             return product;
           }
 
-          const originalPrice = patch.original_price ?? product.original_price;
-          const discountPercent = patch.discount_percent ?? product.discount_percent;
-
           return {
             ...product,
             ...patch,
-            final_price: calculateFinalPrice(originalPrice, discountPercent),
+            ...normalizeProductPricing(product, patch),
           };
         });
 

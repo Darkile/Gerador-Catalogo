@@ -1,9 +1,9 @@
-﻿import { Worker } from "bullmq";
+import { Worker } from "bullmq";
 import { getRedisConnection } from "@/lib/queue/redis";
 import { AI_IMAGE_QUEUE_NAME, type AiImageJobData } from "@/lib/queue/queues";
 import { processImageWithRetry } from "@/lib/ai/process-product";
 import { getSupabaseAdminClient } from "@/lib/supabase/admin";
-import { calculateFinalPrice } from "@/lib/price";
+import { normalizePricing } from "@/lib/price";
 import { recomputeAiJobProgress } from "@/lib/queue/job-status";
 
 let worker: Worker<AiImageJobData> | null = null;
@@ -29,19 +29,22 @@ export function ensureAiWorker() {
 
         const { data: existingProduct } = await supabase
           .from("products")
-          .select("original_price, discount_percent")
+          .select("original_price, final_price")
           .eq("id", productId)
           .single();
 
-        const originalPrice = Number(existingProduct?.original_price ?? 0);
-        const discountPercent = Number(existingProduct?.discount_percent ?? 0);
+        const pricing = normalizePricing(
+          Number(existingProduct?.original_price ?? 0),
+          Number(existingProduct?.final_price ?? 0),
+        );
 
         await supabase
           .from("products")
           .update({
             product_type: vision.product_type,
             description: vision.description,
-            final_price: calculateFinalPrice(originalPrice, discountPercent),
+            discount_percent: pricing.discount_percent,
+            final_price: pricing.final_price,
             ai_status: "done",
             ai_error: null,
             updated_at: new Date().toISOString(),

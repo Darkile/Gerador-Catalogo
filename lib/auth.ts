@@ -1,4 +1,4 @@
-﻿import { redirect } from "next/navigation";
+import { redirect } from "next/navigation";
 import { getSupabaseServerClient } from "@/lib/supabase/server";
 
 function hasSupabaseConfig() {
@@ -12,14 +12,18 @@ export async function requireUser() {
     redirect("/login");
   }
 
-  const supabase = getSupabaseServerClient();
-  const { data, error } = await supabase.auth.getUser();
+  try {
+    const supabase = getSupabaseServerClient();
+    const { data, error } = await supabase.auth.getUser();
 
-  if (error || !data.user) {
+    if (error || !data.user) {
+      redirect("/login");
+    }
+
+    return data.user;
+  } catch {
     redirect("/login");
   }
-
-  return data.user;
 }
 
 export async function getCurrentUser() {
@@ -27,7 +31,11 @@ export async function getCurrentUser() {
     return null;
   }
 
-  const supabase = getSupabaseServerClient();
-  const { data } = await supabase.auth.getUser();
-  return data.user;
+  try {
+    const supabase = getSupabaseServerClient();
+    const { data } = await supabase.auth.getUser();
+    return data.user;
+  } catch {
+    return null;
+  }
 }

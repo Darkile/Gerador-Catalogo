@@ -68,6 +68,14 @@ export async function apiPatchCatalog(
   return parseJsonResponse<{ ok: boolean }>(response);
 }
 
+export async function apiDeleteCatalog(catalogId: string) {
+  const response = await fetch(`/api/catalogs/${catalogId}`, {
+    method: "DELETE",
+  });
+
+  return parseJsonResponse<{ ok: boolean }>(response);
+}
+
 export async function apiSaveProducts(catalogId: string, products: EditableProductInput[]) {
   const response = await fetch(`/api/catalogs/${catalogId}/products`, {
     method: "PUT",

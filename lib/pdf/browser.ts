@@ -1,10 +1,11 @@
-﻿import chromium from "@sparticuz/chromium";
-import puppeteer, { type Browser } from "puppeteer-core";
+import type { Browser } from "puppeteer-core";
 
 export async function launchPdfBrowser(): Promise<Browser> {
   const isVercel = !!process.env.VERCEL;
 
   if (isVercel) {
+    const chromium = (await import("@sparticuz/chromium")).default;
+    const puppeteer = (await import("puppeteer-core")).default;
     const executablePath = await chromium.executablePath();
 
     return puppeteer.launch({
@@ -21,6 +22,8 @@ export async function launchPdfBrowser(): Promise<Browser> {
       "Defina PUPPETEER_EXECUTABLE_PATH no ambiente local para gerar PDF com puppeteer-core.",
     );
   }
+
+  const puppeteer = (await import("puppeteer-core")).default;
 
   return puppeteer.launch({
     executablePath,

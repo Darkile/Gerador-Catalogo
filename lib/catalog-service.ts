@@ -1,4 +1,4 @@
-﻿import { calculateFinalPrice } from "@/lib/price";
+import { normalizePricing } from "@/lib/price";
 import { sanitizeAiText, sanitizeSizeList } from "@/lib/sanitize";
 import type { CatalogWithProducts, EditableProductInput } from "@/lib/types";
 import { getSupabaseAdminClient } from "@/lib/supabase/admin";
@@ -71,27 +71,31 @@ export async function replaceCatalogProducts(
   const normalized = products
     .slice()
     .sort((a, b) => a.position - b.position)
-    .map((product, index) => ({
-      id: product.id,
-      catalog_id: catalogId,
-      position: index,
-      image_path: product.image_path,
-      image_url: product.image_url,
-      image_ratio: product.image_ratio,
-      sku: sanitizeAiText(product.sku || ""),
-      product_type: sanitizeAiText(product.product_type || ""),
-      description: sanitizeAiText(product.description || ""),
-      original_price: Number(product.original_price ?? 0),
-      discount_percent: Number(product.discount_percent ?? 0),
-      final_price: calculateFinalPrice(
+    .map((product, index) => {
+      const pricing = normalizePricing(
         Number(product.original_price ?? 0),
-        Number(product.discount_percent ?? 0),
-      ),
-      sizes: sanitizeSizeList(product.sizes || ""),
-      ai_status: product.ai_status ?? "pending",
-      ai_error: product.ai_error,
-      updated_at: new Date().toISOString(),
-    }));
+        Number(product.final_price ?? 0),
+      );
+
+      return {
+        id: product.id,
+        catalog_id: catalogId,
+        position: index,
+        image_path: product.image_path,
+        image_url: product.image_url,
+        image_ratio: product.image_ratio,
+        sku: sanitizeAiText(product.sku || ""),
+        product_type: sanitizeAiText(product.product_type || ""),
+        description: sanitizeAiText(product.description || ""),
+        original_price: pricing.original_price,
+        discount_percent: pricing.discount_percent,
+        final_price: pricing.final_price,
+        sizes: sanitizeSizeList(product.sizes || ""),
+        ai_status: product.ai_status ?? "pending",
+        ai_error: product.ai_error,
+        updated_at: new Date().toISOString(),
+      };
+    });
 
   const { error: deleteError } = await supabase
     .from("products")
