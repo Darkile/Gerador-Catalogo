@@ -392,21 +392,21 @@ export default function EditorPage() {
             </div>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2">
-            <Button type="button" variant={coverEnabled ? "default" : "outline"} onClick={() => setCatalogMeta({ coverEnabled: !coverEnabled })}>
+          <div className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-2">
+            <Button className="w-full sm:w-auto" type="button" variant={coverEnabled ? "default" : "outline"} onClick={() => setCatalogMeta({ coverEnabled: !coverEnabled })}>
               {coverEnabled ? "Capa: ligada" : "Capa: desligada"}
             </Button>
-            <Button type="button" variant="outline" onClick={() => router.push("/upload")}>Adicionar imagens</Button>
-            <Button type="button" variant="outline" onClick={() => setPreviewOpen(true)}>Visualizar PDF</Button>
-            <Button type="button" onClick={handleProcessAi} disabled={isProcessingAi || isSaving || products.length === 0}>
+            <Button className="w-full sm:w-auto" type="button" variant="outline" onClick={() => router.push("/upload")}>Adicionar imagens</Button>
+            <Button className="w-full sm:w-auto" type="button" variant="outline" onClick={() => setPreviewOpen(true)}>Visualizar PDF</Button>
+            <Button className="w-full sm:w-auto" type="button" onClick={handleProcessAi} disabled={isProcessingAi || isSaving || products.length === 0}>
               {isProcessingAi ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
-              Processar com IA
+              Processar IA
             </Button>
-            <Button type="button" onClick={handleGeneratePdf} disabled={isGeneratingPdf || isSaving || products.length === 0}>
+            <Button className="w-full sm:w-auto" type="button" onClick={handleGeneratePdf} disabled={isGeneratingPdf || isSaving || products.length === 0}>
               {isGeneratingPdf ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <FileDown className="mr-2 h-4 w-4" />}
               Gerar PDF
             </Button>
-            <Button type="button" variant="secondary" onClick={saveCatalog} disabled={isSaving}>
+            <Button className="w-full sm:w-auto" type="button" variant="secondary" onClick={saveCatalog} disabled={isSaving}>
               {isSaving ? <Spinner className="mr-2" /> : null}
               Salvar
             </Button>
@@ -444,14 +444,14 @@ export default function EditorPage() {
           </CardContent>
         </Card>
       ) : (
-        <section className="editor-grid gap-12 mt-12">
+        <section className="editor-grid gap-8 lg:gap-12 mt-8 lg:mt-12">
           {products
             .slice()
             .sort((a, b) => a.position - b.position)
             .map((product, index) => (
               <Card key={product.id} className="anim-product-card overflow-hidden border-border bg-transparent shadow-none hover:border-foreground/30 transition-all duration-500">
                 <CardHeader className="bg-neutral-50/50 pb-4">
-                  <div className="flex items-center justify-between gap-2">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-2">
                     <div>
                       <CardTitle className="text-base">Produto #{index + 1}</CardTitle>
                       <CardDescription className="mt-1 flex items-center gap-2">
@@ -459,10 +459,10 @@ export default function EditorPage() {
                         {product.ai_error ? <span className="text-red-700">{product.ai_error}</span> : null}
                       </CardDescription>
                     </div>
-                    <div className="flex gap-1">
-                      <Button type="button" variant="ghost" size="sm" onClick={() => reorderProduct(product.id, "up")}>↑</Button>
-                      <Button type="button" variant="ghost" size="sm" onClick={() => reorderProduct(product.id, "down")}>↓</Button>
-                      <Button type="button" variant="ghost" size="sm" onClick={() => removeProduct(product.id)}>Remover</Button>
+                    <div className="flex w-full sm:w-auto gap-1">
+                      <Button className="flex-1 sm:flex-initial" type="button" variant="ghost" size="sm" onClick={() => reorderProduct(product.id, "up")}>↑</Button>
+                      <Button className="flex-1 sm:flex-initial" type="button" variant="ghost" size="sm" onClick={() => reorderProduct(product.id, "down")}>↓</Button>
+                      <Button className="flex-1 sm:flex-initial" type="button" variant="ghost" size="sm" onClick={() => removeProduct(product.id)}>Remover</Button>
                     </div>
                   </div>
                 </CardHeader>

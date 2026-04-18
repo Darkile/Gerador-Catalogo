@@ -29,7 +29,7 @@ export function CatalogPreview({
     <iframe
       title="Pré-visualização do catálogo"
       srcDoc={html}
-      className="h-[75vh] w-full rounded-md border border-neutral-200 bg-white"
+      className="h-[80vh] sm:h-[75vh] w-full rounded-md border border-neutral-200 bg-white"
     />
   );
 }

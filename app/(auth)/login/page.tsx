@@ -77,14 +77,21 @@ export default function LoginPage() {
       </div>
       
       {/* Lado Direito - Formulário */}
-      <div ref={containerRef} className="catalog-shell flex w-full lg:w-1/2 flex-col items-center justify-center p-6">
+      <div ref={containerRef} className="catalog-shell flex w-full lg:w-1/2 flex-col items-center justify-center px-6 py-12 lg:p-24">
+        
+        {/* Branding Mobile (Aparece apenas quando a imagem for ocultada) */}
+        <div className="gsap-stagger mb-10 block text-center lg:hidden">
+          <p className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground mb-1">Gregory Paper</p>
+          <h1 className="text-3xl tracking-widest font-serif text-[#8A0303] drop-shadow-sm">GREGORY</h1>
+        </div>
+
         <Card className="gsap-stagger w-full max-w-md border-transparent bg-transparent shadow-none">
-          <CardHeader className="gsap-stagger">
+          <CardHeader className="gsap-stagger px-0 sm:px-6">
           <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Operação Interna</p>
-          <CardTitle className="text-3xl font-serif">Acesso ao Gerador</CardTitle>
+          <CardTitle className="text-2xl sm:text-3xl font-serif">Acesso ao Gerador</CardTitle>
           <CardDescription>Entre com sua conta para editar e gerar catálogos.</CardDescription>
         </CardHeader>
-        <CardContent className="space-y-6">
+        <CardContent className="space-y-6 px-0 sm:px-6">
           <form className="space-y-5" onSubmit={form.handleSubmit(onSubmit)}>
             <div className="space-y-2">
               <Label htmlFor="email">E-mail</Label>

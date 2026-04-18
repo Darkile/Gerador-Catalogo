@@ -342,22 +342,22 @@ export default function UploadPage() {
 
           <div
             {...getRootProps()}
-            className={`flex w-full cursor-pointer flex-col items-center justify-center border-b-2 p-24 transition-all duration-700 ${
+            className={`flex w-full cursor-pointer flex-col items-center justify-center border-b-2 p-8 py-12 md:p-24 transition-all duration-700 ${
               isDragActive ? "scale-[1.01] border-b-neutral-900" : "border-b-neutral-200 hover:border-b-neutral-900"
             }`}
           >
             <input {...getInputProps()} />
             <UploadCloud className="mb-5 h-8 w-8 text-neutral-500" />
-            <h3 className="mb-2 text-3xl font-serif text-neutral-900">Solte as imagens aqui</h3>
-            <p className="text-sm font-medium uppercase tracking-[0.2em] text-muted-foreground">Ou clique para navegar</p>
+            <h3 className="mb-2 text-2xl md:text-3xl text-center font-serif text-neutral-900">Solte as imagens aqui</h3>
+            <p className="text-xs md:text-sm text-center font-medium uppercase tracking-[0.2em] text-muted-foreground">Ou clique para navegar</p>
             <p className="mt-6 text-[10px] uppercase tracking-wider text-neutral-400">JPG ou PNG • alta resolução</p>
           </div>
 
           {errorMessage ? <p className="text-sm text-red-700">{errorMessage}</p> : null}
 
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <p className="text-sm text-neutral-600">{totalSelected} arquivo(s) prontos para envio</p>
-            <Button type="button" variant="outline" onClick={() => setPendingFiles([])} disabled={pendingFiles.length === 0}>
+            <Button className="w-full sm:w-auto" type="button" variant="outline" onClick={() => setPendingFiles([])} disabled={pendingFiles.length === 0}>
               Limpar lista
             </Button>
           </div>
@@ -407,11 +407,11 @@ export default function UploadPage() {
             </div>
           )}
 
-          <div className="mt-12 flex justify-end gap-6 border-t border-neutral-100 pt-8">
-            <Button type="button" variant="ghost" className="uppercase tracking-widest text-xs" onClick={() => router.push("/editor")}>
+          <div className="mt-12 flex flex-col sm:flex-row justify-end gap-4 sm:gap-6 border-t border-neutral-100 pt-8">
+            <Button type="button" variant="ghost" className="w-full sm:w-auto uppercase tracking-widest text-xs" onClick={() => router.push("/editor")}>
               Pular para editor
             </Button>
-            <Button type="button" className="px-8 text-xs uppercase tracking-widest" onClick={handleUpload} disabled={!canUpload}>
+            <Button type="button" className="w-full sm:w-auto px-8 text-xs uppercase tracking-widest" onClick={handleUpload} disabled={!canUpload}>
               {isUploading ? <Spinner className="mr-2" /> : null}
               Finalizar seleção
             </Button>
@@ -446,7 +446,7 @@ export default function UploadPage() {
                       {new Date(catalog.updated_at).toLocaleString("pt-BR")}
                     </p>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="w-full sm:w-auto flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
                     <Button type="button" variant="ghost" className="uppercase tracking-widest text-[10px]" onClick={() => handleResumeCatalog(catalog)}>
                       Retomar
                     </Button>
