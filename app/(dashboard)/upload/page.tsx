@@ -407,8 +407,8 @@ export default function UploadPage() {
             </div>
           )}
 
-          <div className="mt-12 flex flex-col sm:flex-row justify-end gap-4 sm:gap-6 border-t border-neutral-100 pt-8">
-            <Button type="button" variant="ghost" className="w-full sm:w-auto uppercase tracking-widest text-xs" onClick={() => router.push("/editor")}>
+          <div className="mt-12 grid grid-cols-1 sm:flex sm:flex-row sm:justify-end gap-4 border-t border-neutral-100 pt-8">
+            <Button type="button" variant="ghost" className="w-full uppercase tracking-widest text-xs" onClick={() => router.push("/editor")}>
               Pular para editor
             </Button>
             <Button type="button" className="w-full sm:w-auto px-8 text-xs uppercase tracking-widest" onClick={handleUpload} disabled={!canUpload}>
@@ -446,14 +446,14 @@ export default function UploadPage() {
                       {new Date(catalog.updated_at).toLocaleString("pt-BR")}
                     </p>
                   </div>
-                  <div className="w-full sm:w-auto flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
-                    <Button type="button" variant="ghost" className="uppercase tracking-widest text-[10px]" onClick={() => handleResumeCatalog(catalog)}>
+                  <div className="w-full grid grid-cols-2 sm:flex sm:flex-row items-center gap-2">
+                    <Button type="button" variant="ghost" className="w-full uppercase tracking-widest text-[10px]" onClick={() => handleResumeCatalog(catalog)}>
                       Retomar
                     </Button>
                     <Button
                       type="button"
                       variant="destructive"
-                      className="uppercase tracking-widest text-[10px]"
+                      className="w-full uppercase tracking-widest text-[10px]"
                       onClick={() => handleDeleteCatalog(catalog)}
                       disabled={deletingCatalogId === catalog.id}
                     >

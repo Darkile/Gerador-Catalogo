@@ -83,18 +83,22 @@ export default function EditorPage() {
     // ScrollTrigger para os Cards dos Produtos (Bento grid style)
     const cards = gsap.utils.toArray<HTMLElement>(".anim-product-card");
     cards.forEach((card) => {
-      gsap.from(card, {
-        scrollTrigger: {
-          trigger: card,
-          start: "top bottom-=80", // Começa um pouco antes de aparecer
-          toggleActions: "play none none reverse"
-        },
-        y: 60,
-        opacity: 0,
-        scale: 0.98,
-        duration: 0.8,
-        ease: "power3.out"
-      });
+      gsap.fromTo(card,
+        { y: 60, opacity: 0, scale: 0.98 },
+        {
+          scrollTrigger: {
+            trigger: card,
+            start: "top bottom-=80", // Começa um pouco antes de aparecer
+            toggleActions: "play none none reverse"
+          },
+          y: 0,
+          opacity: 1,
+          scale: 1,
+          duration: 0.8,
+          ease: "power3.out",
+          clearProps: "all"
+        }
+      );
     });
   }, { scope: containerRef, dependencies: [products] });
 

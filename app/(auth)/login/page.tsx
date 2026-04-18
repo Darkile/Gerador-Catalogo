@@ -61,29 +61,23 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen">
+    <div className="flex flex-col lg:flex-row min-h-screen">
       {/* Lado Esquerdo - Imagem Institucional */}
-      <div className="relative hidden w-1/2 lg:block overflow-hidden bg-neutral-100">
+      <div className="relative block w-full h-[35vh] lg:h-auto lg:w-1/2 overflow-hidden bg-neutral-100">
         <div ref={containerRef} className="absolute inset-0">
           <img 
             className="gsap-stagger h-full w-full object-cover grayscale-[10%] hover:grayscale-0 transition-all duration-[2000ms] hover:scale-105"
             src="/gregory_editorial_login.png" 
             alt="Gregory Editorial" 
           />
-          <div className="absolute top-8 left-10 z-10">
-            <h1 className="text-4xl tracking-widest font-serif text-[#8A0303] drop-shadow-sm">GREGORY</h1>
+          <div className="absolute top-6 left-6 lg:top-8 lg:left-10 z-10 bg-white/40 lg:bg-transparent px-4 py-2 lg:p-0 rounded-sm backdrop-blur-md lg:backdrop-blur-none">
+            <h1 className="text-2xl lg:text-4xl tracking-widest font-serif text-[#8A0303] drop-shadow-sm">GREGORY</h1>
           </div>
         </div>
       </div>
       
       {/* Lado Direito - Formulário */}
-      <div ref={containerRef} className="catalog-shell flex w-full lg:w-1/2 flex-col items-center justify-center px-6 py-12 lg:p-24">
-        
-        {/* Branding Mobile (Aparece apenas quando a imagem for ocultada) */}
-        <div className="gsap-stagger mb-10 block text-center lg:hidden">
-          <p className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground mb-1">Gregory Paper</p>
-          <h1 className="text-3xl tracking-widest font-serif text-[#8A0303] drop-shadow-sm">GREGORY</h1>
-        </div>
+      <div ref={containerRef} className="catalog-shell flex w-full lg:w-1/2 flex-col items-center justify-center px-6 py-8 lg:p-24 bg-white lg:bg-transparent">
 
         <Card className="gsap-stagger w-full max-w-md border-transparent bg-transparent shadow-none">
           <CardHeader className="gsap-stagger px-0 sm:px-6">
