@@ -17,6 +17,7 @@ export const env = {
   openaiVisionModel: process.env.OPENAI_VISION_MODEL ?? "gpt-4o",
   geminiApiKey: process.env.GEMINI_API_KEY ?? "",
   geminiVisionModel: process.env.GEMINI_VISION_MODEL ?? "gemini-2.5-flash",
+  aiTimeoutMs: Number(process.env.AI_TIMEOUT_MS ?? "30000"),
   redisUrl: process.env.UPSTASH_REDIS_REST_URL ?? process.env.REDIS_URL ?? "",
   redisToken: process.env.UPSTASH_REDIS_REST_TOKEN ?? process.env.REDIS_TOKEN ?? "",
   redisHost: process.env.REDIS_HOST ?? "",

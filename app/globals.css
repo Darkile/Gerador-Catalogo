@@ -64,6 +64,11 @@ body {
     display: none !important;
   }
 
+  html,
+  body {
+    overflow: hidden !important;
+  }
+
   body {
     background: #fff !important;
   }

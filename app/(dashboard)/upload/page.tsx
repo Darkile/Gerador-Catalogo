@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import { Spinner } from "@/components/ui/spinner";
-import { apiCreateCatalog, apiSaveProducts } from "@/lib/api-client";
+import { apiCreateCatalog, apiListCatalogs, apiSaveProducts } from "@/lib/api-client";
 import { getImageRatio } from "@/lib/image-utils";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import { slugify } from "@/lib/utils";
@@ -21,6 +21,16 @@ interface PendingUploadFile {
   file: File;
   previewUrl: string;
   ratio: number | null;
+}
+
+interface RecentCatalog {
+  id: string;
+  title: string;
+  status: "draft" | "processing" | "ready" | "error";
+  cover_enabled: boolean;
+  pdf_path: string | null;
+  product_count: number;
+  updated_at: string;
 }
 
 const MAX_FILES = 50;
@@ -41,6 +51,8 @@ export default function UploadPage() {
   } = useCatalogStore();
 
   const [pendingFiles, setPendingFiles] = useState<PendingUploadFile[]>([]);
+  const [recentCatalogs, setRecentCatalogs] = useState<RecentCatalog[]>([]);
+  const [isLoadingRecentCatalogs, setIsLoadingRecentCatalogs] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   useEffect(() => {
@@ -48,6 +60,32 @@ export default function UploadPage() {
       pendingFiles.forEach((item) => URL.revokeObjectURL(item.previewUrl));
     };
   }, [pendingFiles]);
+
+  useEffect(() => {
+    let cancelled = false;
+    setIsLoadingRecentCatalogs(true);
+
+    apiListCatalogs(8)
+      .then((response) => {
+        if (!cancelled) {
+          setRecentCatalogs(response.catalogs);
+        }
+      })
+      .catch((error) => {
+        if (!cancelled) {
+          setErrorMessage(error instanceof Error ? error.message : "Falha ao carregar histórico.");
+        }
+      })
+      .finally(() => {
+        if (!cancelled) {
+          setIsLoadingRecentCatalogs(false);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
     if (acceptedFiles.length === 0) {
@@ -217,6 +255,15 @@ export default function UploadPage() {
     }
   }
 
+  function handleResumeCatalog(catalog: RecentCatalog) {
+    setCatalogMeta({
+      catalogId: catalog.id,
+      catalogTitle: catalog.title,
+      coverEnabled: catalog.cover_enabled,
+    });
+    router.push("/editor");
+  }
+
   return (
     <div className="space-y-6">
       <Card>
@@ -328,6 +375,43 @@ export default function UploadPage() {
               Enviar para catálogo
             </Button>
           </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Histórico Recente</CardTitle>
+          <CardDescription>Retome catálogos já salvos no banco de dados.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          {isLoadingRecentCatalogs ? (
+            <div className="flex items-center gap-2 text-sm text-neutral-600">
+              <Spinner />
+              Carregando histórico...
+            </div>
+          ) : recentCatalogs.length === 0 ? (
+            <p className="text-sm text-neutral-500">Nenhum catálogo salvo até o momento.</p>
+          ) : (
+            <div className="space-y-2">
+              {recentCatalogs.map((catalog) => (
+                <div
+                  key={catalog.id}
+                  className="flex flex-wrap items-center justify-between gap-3 rounded-md border border-neutral-200 bg-white p-3"
+                >
+                  <div>
+                    <p className="text-sm font-medium text-neutral-900">{catalog.title}</p>
+                    <p className="text-xs text-neutral-500">
+                      {catalog.product_count} produto(s) • status: {catalog.status} • atualizado em{" "}
+                      {new Date(catalog.updated_at).toLocaleString("pt-BR")}
+                    </p>
+                  </div>
+                  <Button type="button" variant="outline" onClick={() => handleResumeCatalog(catalog)}>
+                    Retomar no editor
+                  </Button>
+                </div>
+              ))}
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>

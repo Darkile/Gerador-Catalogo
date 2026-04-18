@@ -1,4 +1,4 @@
-﻿import type { CatalogWithProducts, EditableProductInput } from "@/lib/types";
+import type { CatalogWithProducts, EditableProductInput } from "@/lib/types";
 
 async function parseJsonResponse<T>(response: Response): Promise<T> {
   if (!response.ok) {
@@ -20,6 +20,26 @@ export async function apiCreateCatalog(payload: {
   });
 
   return parseJsonResponse<{ catalog: { id: string; title: string; cover_enabled: boolean } }>(response);
+}
+
+export async function apiListCatalogs(limit = 20) {
+  const response = await fetch(`/api/catalogs?limit=${limit}`, {
+    method: "GET",
+    cache: "no-store",
+  });
+
+  return parseJsonResponse<{
+    catalogs: Array<{
+      id: string;
+      title: string;
+      status: "draft" | "processing" | "ready" | "error";
+      cover_enabled: boolean;
+      pdf_path: string | null;
+      product_count: number;
+      updated_at: string;
+      created_at: string;
+    }>;
+  }>(response);
 }
 
 export async function apiGetCatalog(catalogId: string) {

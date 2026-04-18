@@ -5,12 +5,32 @@ import { sanitizeAiText } from "@/lib/sanitize";
 import { sleep } from "@/lib/utils";
 import type { VisionResult } from "@/lib/types";
 
+const AI_TIMEOUT_MS = Number(process.env.AI_TIMEOUT_MS ?? "30000");
+
 function fallbackVisionResult(): VisionResult {
   return {
     product_type: "Peça de moda feminina",
     description:
       "Peça com proposta elegante e versátil, ideal para composições de inverno. Modelagem pensada para valorizar a silhueta com acabamento sofisticado.",
   };
+}
+
+async function withTimeout<T>(promise: Promise<T>, timeoutMs: number, label: string): Promise<T> {
+  let timeoutHandle: NodeJS.Timeout | null = null;
+
+  const timeoutPromise = new Promise<never>((_, reject) => {
+    timeoutHandle = setTimeout(() => {
+      reject(new Error(`Timeout de ${timeoutMs}ms no processamento IA (${label}).`));
+    }, timeoutMs);
+  });
+
+  try {
+    return await Promise.race([promise, timeoutPromise]);
+  } finally {
+    if (timeoutHandle) {
+      clearTimeout(timeoutHandle);
+    }
+  }
 }
 
 function stripCodeFence(text: string) {
@@ -23,7 +43,15 @@ function stripCodeFence(text: string) {
 
 function parseVisionResult(raw: string): VisionResult {
   const cleaned = stripCodeFence(raw);
-  const parsed = JSON.parse(cleaned) as VisionResult;
+  const parsed = JSON.parse(cleaned) as {
+    product_type?: unknown;
+    description?: unknown;
+  };
+
+  if (typeof parsed.product_type !== "string" || typeof parsed.description !== "string") {
+    throw new Error("Resposta da IA fora do schema esperado.");
+  }
+
   return {
     product_type: sanitizeAiText(parsed.product_type),
     description: sanitizeAiText(parsed.description),
@@ -63,6 +91,8 @@ async function processImageWithOpenAi(imageUrl: string): Promise<VisionResult> {
     },
     temperature: 0.2,
     max_tokens: 280,
+  }, {
+    timeout: AI_TIMEOUT_MS,
   });
 
   const content = response.choices[0]?.message?.content;
@@ -74,7 +104,9 @@ async function processImageWithOpenAi(imageUrl: string): Promise<VisionResult> {
 }
 
 async function fetchImageAsBase64(imageUrl: string) {
-  const response = await fetch(imageUrl);
+  const response = await fetch(imageUrl, {
+    signal: AbortSignal.timeout(AI_TIMEOUT_MS),
+  });
   if (!response.ok) {
     throw new Error(`Falha ao baixar imagem para Gemini: HTTP ${response.status}`);
   }
@@ -123,6 +155,7 @@ async function processImageWithGemini(imageUrl: string): Promise<VisionResult> {
       responseMimeType: "application/json",
       responseSchema: {
         type: "object",
+        additionalProperties: false,
         properties: {
           product_type: {
             type: "string",
@@ -143,6 +176,7 @@ async function processImageWithGemini(imageUrl: string): Promise<VisionResult> {
       "x-goog-api-key": apiKey,
     },
     body: JSON.stringify(requestBody),
+    signal: AbortSignal.timeout(AI_TIMEOUT_MS),
   });
 
   if (!response.ok) {
@@ -192,10 +226,10 @@ export async function processImageWithVision(imageUrl: string): Promise<VisionRe
   const provider = resolveProvider();
 
   if (provider === "openai") {
-    return processImageWithOpenAi(imageUrl);
+    return withTimeout(processImageWithOpenAi(imageUrl), AI_TIMEOUT_MS + 1000, "OpenAI");
   }
 
-  return processImageWithGemini(imageUrl);
+  return withTimeout(processImageWithGemini(imageUrl), AI_TIMEOUT_MS + 1000, "Gemini");
 }
 
 export async function processImageWithRetry(imageUrl: string, retries = 2): Promise<VisionResult> {

@@ -17,7 +17,7 @@ Sistema web para montar catálogos editoriais em PDF A4 com estilo Gregory Paper
 - UI: Tailwind CSS, componentes no estilo shadcn/ui, React Dropzone, React Hook Form, Zustand
 - Backend: Next.js API Routes (Node.js runtime)
 - Banco e storage: Supabase PostgreSQL + Supabase Storage
-- IA Vision: OpenAI `gpt-4o` com JSON Schema strict, timeout 30s e retry 2x
+- IA Vision: Google Gemini (default) ou OpenAI `gpt-4o`, com JSON Schema strict, timeout 30s e retry 2x
 - Fila: BullMQ + Redis (Upstash)
 - PDF: Puppeteer Core + template editorial A4
 
@@ -29,6 +29,7 @@ Sistema web para montar catálogos editoriais em PDF A4 com estilo Gregory Paper
   - Preview em grid com numeração
   - Remover/reordenar
   - Upload para Supabase Storage com barra de progresso
+  - Histórico recente para retomar catálogos salvos
 - `/editor`
   - Edição por produto: SKU, tipo, descrição, preço original, desconto, preço final calculado, tamanhos
   - Botão `Processar com IA` com fila assíncrona e polling de status
@@ -39,6 +40,7 @@ Sistema web para montar catálogos editoriais em PDF A4 com estilo Gregory Paper
   - `GET /api/process-image?jobId=...` (status)
   - `POST /api/generate-pdf`
   - `GET /api/catalogs/:id`
+  - `GET /api/catalogs?limit=8` (histórico)
   - `POST /api/catalogs`
   - `PUT /api/catalogs/:id/products`
 - Style extractor
@@ -131,6 +133,7 @@ Status atual do projeto `gerador-catalogo-darkile`:
 - `OPENAI_VISION_MODEL`: configurada (`gpt-4o`)
 - `AI_WORKER_CONCURRENCY`: configurada (`2`)
 - `AI_PROVIDER`: configurável (`gemini` ou `openai`)
+- `AI_TIMEOUT_MS`: recomendado (`30000`)
 - `GEMINI_VISION_MODEL`: recomendado (`gemini-2.5-flash`)
 - `GEMINI_API_KEY`: recomendado para produção
 - `OPENAI_API_KEY`: opcional (necessária apenas se `AI_PROVIDER=openai`)

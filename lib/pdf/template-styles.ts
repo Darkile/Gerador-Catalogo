@@ -38,6 +38,7 @@ export function buildCatalogPrintCss(tokens: DesignTokens) {
       width: 100%;
       position: relative;
       counter-reset: page;
+      padding-bottom: 14mm;
     }
 
     .catalog-cover {
@@ -111,6 +112,7 @@ export function buildCatalogPrintCss(tokens: DesignTokens) {
       justify-content: flex-start;
       padding: 6px 2px;
       background: #fff;
+      min-width: 0;
     }
 
     .sku {
@@ -120,6 +122,7 @@ export function buildCatalogPrintCss(tokens: DesignTokens) {
       color: var(--gregory-text-secondary);
       text-transform: uppercase;
       margin-bottom: 12px;
+      white-space: nowrap;
     }
 
     .product-name {
@@ -168,6 +171,7 @@ export function buildCatalogPrintCss(tokens: DesignTokens) {
       margin-top: auto;
       font-size: 13px;
       color: var(--gregory-text-primary);
+      white-space: nowrap;
     }
 
     .catalog-footer {

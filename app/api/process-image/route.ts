@@ -34,6 +34,13 @@ export async function POST(request: Request) {
       );
     }
 
+    if (products.length > 50) {
+      return NextResponse.json(
+        { error: "Limite excedido: o catálogo suporta no máximo 50 produtos por processamento." },
+        { status: 400 },
+      );
+    }
+
     const { data: aiJob, error: aiJobError } = await supabase
       .from("ai_jobs")
       .insert({
