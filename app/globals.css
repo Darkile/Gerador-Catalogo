@@ -1,0 +1,80 @@
+﻿@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: 35 33% 98%;
+  --foreground: 220 12% 12%;
+  --card: 0 0% 100%;
+  --card-foreground: 220 12% 12%;
+  --primary: 220 26% 16%;
+  --primary-foreground: 40 25% 96%;
+  --secondary: 30 26% 94%;
+  --secondary-foreground: 220 12% 12%;
+  --muted: 30 20% 93%;
+  --muted-foreground: 220 8% 42%;
+  --accent: 357 92% 28%;
+  --accent-foreground: 36 50% 96%;
+  --border: 30 16% 84%;
+  --input: 30 16% 84%;
+  --ring: 220 26% 16%;
+  --radius: 0.65rem;
+
+  --gregory-bg: #fafafa;
+  --gregory-text-primary: #111111;
+  --gregory-text-secondary: #888888;
+  --gregory-accent: #8a0303;
+  --gregory-divider: #e5e5e5;
+  --gregory-size-title: 30px;
+  --gregory-size-body: 14px;
+  --gregory-size-meta: 12px;
+  --gregory-size-price: 22px;
+}
+
+* {
+  border-color: hsl(var(--border));
+}
+
+html,
+body {
+  min-height: 100%;
+}
+
+body {
+  @apply bg-[hsl(var(--background))] text-[hsl(var(--foreground))];
+  font-feature-settings: "ss01";
+}
+
+.catalog-shell {
+  background:
+    radial-gradient(circle at 10% -10%, #f1ece7 0, transparent 48%),
+    radial-gradient(circle at 95% 5%, #f8f5f2 0, transparent 42%),
+    linear-gradient(180deg, #fcfbfa 0%, #f7f5f2 100%);
+}
+
+.editor-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+}
+
+@media print {
+  .no-print,
+  .no-print * {
+    display: none !important;
+  }
+
+  body {
+    background: #fff !important;
+  }
+
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+
+  .page-break {
+    page-break-before: auto;
+    page-break-after: auto;
+  }
+}

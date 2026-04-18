@@ -1,0 +1,43 @@
+{
+  "typography": {
+    "title_font_family": "Playfair Display",
+    "title_font_weight": 700,
+    "title_font_size_px": 24,
+    "title_letter_spacing_em": -0.02,
+    "body_font_family": "Inter",
+    "body_font_weight": 400,
+    "body_font_size_px": 13,
+    "body_line_height": 1.6,
+    "metadata_font_family": "Inter",
+    "metadata_font_weight": 400,
+    "metadata_font_size_px": 12,
+    "price_font_family": "Inter",
+    "price_font_weight": 600,
+    "price_font_size_px": 20
+  },
+  "colors": {
+    "background": "#FAFAFA",
+    "text_primary": "#111111",
+    "text_secondary": "#888888",
+    "accent_burgundy": "#8A0303",
+    "divider": "#E5E5E5"
+  },
+  "layout": {
+    "page_margin_top_mm": 20,
+    "page_margin_right_mm": 15,
+    "page_margin_bottom_mm": 20,
+    "page_margin_left_mm": 15,
+    "product_vertical_gap_px": 46,
+    "image_column_ratio": 0.65,
+    "info_column_ratio": 0.35
+  },
+  "components": {
+    "sku_tracking_em": 0.05,
+    "product_name_margin_bottom_px": 12,
+    "description_margin_bottom_px": 16,
+    "sizes_padding_top_px": 12,
+    "sizes_border_top_color": "#EEEEEE",
+    "footer_text": "Gregory Moda • 45 anos de elegância e estilo",
+    "footer_font_size_px": 11
+  }
+}

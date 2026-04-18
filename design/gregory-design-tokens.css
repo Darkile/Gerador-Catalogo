@@ -1,0 +1,18 @@
+:root {
+      --gregory-bg: #FAFAFA;
+      --gregory-text-primary: #111111;
+      --gregory-text-secondary: #888888;
+      --gregory-accent: #8A0303;
+      --gregory-divider: #E5E5E5;
+      --gregory-font-title: 'Playfair Display', serif;
+      --gregory-font-body: 'Inter', sans-serif;
+      --gregory-font-meta: 'Inter', sans-serif;
+      --gregory-size-title: 24px;
+      --gregory-size-body: 13px;
+      --gregory-size-meta: 12px;
+      --gregory-size-price: 20px;
+      --gregory-page-margin-top: 20mm;
+      --gregory-page-margin-right: 15mm;
+      --gregory-page-margin-bottom: 20mm;
+      --gregory-page-margin-left: 15mm;
+    }
