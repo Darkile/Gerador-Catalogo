@@ -62,6 +62,11 @@ export async function processImageWithVision(imageUrl: string): Promise<VisionRe
 }
 
 export async function processImageWithRetry(imageUrl: string, retries = 2): Promise<VisionResult> {
+  const openAiKey = process.env.OPENAI_API_KEY?.trim();
+  if (!openAiKey || !openAiKey.startsWith("sk-")) {
+    return fallbackVisionResult();
+  }
+
   let lastError: unknown;
 
   for (let attempt = 0; attempt <= retries; attempt += 1) {

@@ -116,6 +116,24 @@ npm run build
 4. Configure bucket/policies no Supabase via migration.
 5. Após o primeiro deploy, copie a URL da Vercel e publique no topo deste README.
 
+## Checklist de Variáveis (Produção)
+
+Status atual do projeto `gerador-catalogo-darkile`:
+
+- `NEXT_PUBLIC_SUPABASE_URL`: configurada
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`: configurada
+- `SUPABASE_SERVICE_ROLE_KEY`: configurada
+- `REDIS_URL` (Upstash): configurada
+- `NEXT_PUBLIC_APP_URL`: configurada
+- `NEXT_PUBLIC_IMAGE_BUCKET_NAME`: configurada
+- `IMAGE_BUCKET_NAME`: configurada
+- `PDF_BUCKET_NAME`: configurada
+- `OPENAI_VISION_MODEL`: configurada (`gpt-4o`)
+- `AI_WORKER_CONCURRENCY`: configurada (`2`)
+- `OPENAI_API_KEY`: pendente (opcional para fallback, obrigatório para descrição real com IA)
+
+Sem `OPENAI_API_KEY`, o pipeline continua funcional com descrição de fallback.
+
 ## Observações operacionais
 
 - O GitHub hospeda o código, não o runtime da aplicação.
